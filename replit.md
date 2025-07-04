@@ -100,9 +100,11 @@ This is a full-stack web application for ordering fresh pancakes for delivery to
   - Redesigned UI with new color scheme throughout the application
 
 ## Recent Changes
-- **Two-page website**: Added About page with navigation
-- **Morning Glory color palette**: Complete visual redesign using specified colors
-- **Enhanced user experience**: Better navigation and visual consistency
+- **Playful, artistic redesign**: Complete overhaul with animated landing page and engaging order form
+- **Two-page experience**: Welcoming landing page + dedicated order page with smooth animations
+- **Morning Glory color palette**: Bright, warm colors creating joyful breakfast experience
+- **Advanced animations**: Framer Motion integration with floating elements, sparkles, and smooth transitions
+- **Enhanced UX**: Large rounded cards, playful interactions, and memorable visual elements
 - **Individual flavor quantities**: Customers can select different amounts per flavor
 - **WhatsApp integration**: Orders sent to +254794056800
 
