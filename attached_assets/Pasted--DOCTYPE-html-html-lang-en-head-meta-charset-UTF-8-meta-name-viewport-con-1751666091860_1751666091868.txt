@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Morning Glory Pancakes</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://unpkg.com/framer-motion@9.0.0/dist/framer-motion.js"></script>
+    <script src="https://unpkg.com/lucide@0.16.1/dist/umd/lucide.js"></script>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Quicksand:wght@400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #fff5e6 0%, #ffecd2 100%);
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .pancake-card {
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .pancake-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+        
+        .floating {
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+            100% { transform: translateY(0px); }
+        }
+        
+        .order-btn {
+            background: linear-gradient(135deg, #ff9a00 0%, #ff6a00 100%);
+            transition: all 0.3s ease;
+        }
+        
+        .order-btn:hover {
+            background: linear-gradient(135deg, #ff8a00 0%, #ff5a00 100%);
+            transform: scale(1.05);
+        }
+        
+        .quantity-btn {
+            transition: all 0.2s ease;
+        }
+        
+        .quantity-btn:hover {
+            transform: scale(1.1);
+            background: #ff9a00;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+        const { motion } = framerMotion;
+        
+        // Define our pancake flavors with descriptions and colors
+        const pancakeFlavors = [
+            { 
+                id: 1, 
+                name: "Plain", 
+                description: "Classic buttermilk pancakes", 
+                color: "bg-amber-100",
+                icon: "Utensils"
+            },
+            { 
+                id: 2, 
+                name: "Cinnamon", 
+                description: "Warm cinnamon spice infused", 
+                color: "bg-amber-200",
+                icon: "Sprout"
+            },
+            { 
+                id: 3, 
+                name: "Lemon", 
+                description: "Zesty lemon zest delight", 
+                color: "bg-yellow-100",
+                icon: "Citrus"
+            },
+            { 
+                id: 4, 
+                name: "Orange", 
+                description: "Fresh orange citrus burst", 
+                color: "bg-orange-100",
+                icon: "OrangeSlice"
+            },
+            { 
+                id: 5, 
+                name: "Pineapple", 
+                description: "Tropical pineapple chunks", 
+                color: "bg-yellow-200",
+                icon: "Pineapple"
+            },
+            { 
+                id: 6, 
+                name: "Vanilla", 
+                description: "Sweet Madagascar vanilla", 
+                color: "bg-amber-50",
+                icon: "Candy"
+            }
+        ];
+
+        const App = () => {
+            const [hostel, setHostel] = useState("");
+            const [houseNumber, setHouseNumber] = useState("");
+            const [orderItems, setOrderItems] = useState(
+                pancakeFlavors.map(flavor => ({ ...flavor, quantity: 0 }))
+            );
+            const [isOrderPlaced, setIsOrderPlaced] = useState(false);
+            
+            // Initialize Lucide icons
+            useEffect(() => {
+                lucide.createIcons();
+            }, []);
+            
+            const handleQuantityChange = (id, change) => {
+                setOrderItems(prev => 
+                    prev.map(item => 
+                        item.id === id 
+                            ? { ...item, quantity: Math.max(0, item.quantity + change) } 
+                            : item
+                    )
+                );
+            };
+            
+            const getTotalItems = () => {
+                return orderItems.reduce((total, item) => total + item.quantity, 0);
+            };
+            
+            const getTotalPrice = () => {
+                return orderItems.reduce((total, item) => total + (item.quantity * 2.5), 0);
+            };
+            
+            const placeOrder = () => {
+                if (!hostel || !houseNumber) {
+                    alert("Please enter your hostel name and house number");
+                    return;
+                }
+                
+                if (getTotalItems() === 0) {
+                    alert("Please select at least one pancake");
+                    return;
+                }
+                
+                // Build the WhatsApp message
+                let message = `Good morning! I would like to order pancakes:%0A%0A`;
+                message += `*Hostel:* ${hostel}%0A`;
+                message += `*House Number:* ${houseNumber}%0A%0A`;
+                message += `*Order Details:*%0A`;
+                
+                orderItems.forEach(item => {
+                    if (item.quantity > 0) {
+                        message += `- ${item.name}: ${item.quantity} pancake${item.quantity > 1 ? 's' : ''}%0A`;
+                    }
+                });
+                
+                message += `%0A*Total:* $${getTotalPrice().toFixed(2)}%0A%0A`;
+                message += `Thank you! 🥞`;
+                
+                // Open WhatsApp with the pre-filled message
+                window.open(`https://wa.me/15551234567?text=${message}`, '_blank');
+                
+                setIsOrderPlaced(true);
+                
+                // Reset form after 3 seconds
+                setTimeout(() => {
+                    setHostel("");
+                    setHouseNumber("");
+                    setOrderItems(pancakeFlavors.map(flavor => ({ ...flavor, quantity: 0 })));
+                    setIsOrderPlaced(false);
+                }, 3000);
+            };
+            
+            return (
+                <div className="min-h-screen py-8 px-4 sm:px-6">
+                    {/* Header */}
+                    <motion.header 
+                        className="text-center mb-12"
+                        initial={{ opacity: 0, y: -20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.8 }}
+                    >
+                        <motion.div 
+                            className="flex justify-center mb-4"
+                            animate={{ 
+                                rotate: [0, 5, 0, -5, 0],
+                                scale: [1, 1.05, 1]
+                            }}
+                            transition={{ 
+                                duration: 2,
+                                repeat: Infinity,
+                                repeatType: "reverse"
+                            }}
+                        >
+                            <i className="fas fa-pancakes text-6xl text-amber-500"></i>
+                        </motion.div>
+                        <h1 className="text-4xl md:text-5xl font-bold text-amber-800 mb-2 font-quicksand">
+                            Morning Glory Pancakes
+                        </h1>
+                        <p className="text-lg text-amber-600 max-w-2xl mx-auto">
+                            Order delicious, fluffy pancakes delivered straight to your hostel door!
+                        </p>
+                    </motion.header>
+                    
+                    <div className="max-w-6xl mx-auto">
+                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                            {/* Pancake Selection */}
+                            <motion.div 
+                                className="lg:col-span-2"
+                                initial={{ opacity: 0, x: -20 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                transition={{ duration: 0.6, delay: 0.2 }}
+                            >
+                                <div className="bg-white rounded-2xl p-6 shadow-lg">
+                                    <h2 className="text-2xl font-bold text-amber-800 mb-6 flex items-center">
+                                        <i className="fas fa-utensils mr-3 text-amber-500"></i>
+                                        Choose Your Pancakes
+                                    </h2>
+                                    
+                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                                        {orderItems.map((item) => (
+                                            <motion.div
+                                                key={item.id}
+                                                className={`pancake-card rounded-xl p-5 ${item.color} border-2 border-amber-100`}
+                                                whileHover={{ scale: 1.03 }}
+                                                whileTap={{ scale: 0.98 }}
+                                            >
+                                                <div className="flex justify-between items-start mb-3">
+                                                    <div>
+                                                        <h3 className="font-bold text-lg text-amber-900">{item.name}</h3>
+                                                        <p className="text-sm text-amber-700">{item.description}</p>
+                                                    </div>
+                                                    <i className={`${item.icon} text-amber-600`}></i>
+                                                </div>
+                                                
+                                                <div className="flex items-center justify-between mt-4">
+                                                    <span className="font-bold text-amber-900">$2.50 each</span>
+                                                    <div className="flex items-center space-x-2">
+                                                        <button 
+                                                            className="quantity-btn w-8 h-8 rounded-full bg-amber-300 text-amber-900 flex items-center justify-center"
+                                                            onClick={() => handleQuantityChange(item.id, -1)}
+                                                        >
+                                                            <i className="minus"></i>
+                                                        </button>
+                                                        <span className="font-bold w-8 text-center">{item.quantity}</span>
+                                                        <button 
+                                                            className="quantity-btn w-8 h-8 rounded-full bg-amber-500 text-white flex items-center justify-center"
+                                                            onClick={() => handleQuantityChange(item.id, 1)}
+                                                        >
+                                                            <i className="plus"></i>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </motion.div>
+                                        ))}
+                                    </div>
+                                </div>
+                            </motion.div>
+                            
+                            {/* Order Summary */}
+                            <motion.div
+                                initial={{ opacity: 0, x: 20 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                transition={{ duration: 0.6, delay: 0.4 }}
+                            >
+                                <div className="bg-white rounded-2xl p-6 shadow-lg sticky top-8">
+                                    <h2 className="text-2xl font-bold text-amber-800 mb-6 flex items-center">
+                                        <i className="fas fa-receipt mr-3 text-amber-500"></i>
+                                        Order Summary
+                                    </h2>
+                                    
+                                    {/* Delivery Details */}
+                                    <div className="mb-6">
+                                        <h3 className="font-bold text-lg text-amber-700 mb-3">Delivery Details</h3>
+                                        <div className="space-y-3">
+                                            <div>
+                                                <label className="block text-sm font-medium text-amber-700 mb-1">
+                                                    Hostel Name
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    value={hostel}
+                                                    onChange={(e) => setHostel(e.target.value)}
+                                                    className="w-full p-3 rounded-xl border border-amber-200 focus:ring-2 focus:ring-amber-300 focus:outline-none"
+                                                    placeholder="Enter hostel name"
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-medium text-amber-700 mb-1">
+                                                    House Number
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    value={houseNumber}
+                                                    onChange={(e) => setHouseNumber(e.target.value)}
+                                                    className="w-full p-3 rounded-xl border border-amber-200 focus:ring-2 focus:ring-amber-300 focus:outline-none"
+                                                    placeholder="Enter house number"
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    {/* Order Details */}
+                                    <div className="mb-6">
+                                        <h3 className="font-bold text-lg text-amber-700 mb-3">Your Order</h3>
+                                        <div className="space-y-2 max-h-60 overflow-y-auto pr-2">
+                                            {orderItems.filter(item => item.quantity > 0).length > 0 ? (
+                                                orderItems
+                                                    .filter(item => item.quantity > 0)
+                                                    .map(item => (
+                                                        <div key={item.id} className="flex justify-between py-2 border-b border-amber-100">
+                                                            <span className="text-amber-800">
+                                                                {item.quantity}x {item.name}
+                                                            </span>
+                                                            <span className="font-medium">
+                                                                ${(item.quantity * 2.5).toFixed(2)}
+                                                            </span>
+                                                        </div>
+                                                    ))
+                                            ) : (
+                                                <p className="text-amber-500 text-center py-4">
+                                                    Select pancakes from the menu
+                                                </p>
+                                            )}
+                                        </div>
+                                    </div>
+                                    
+                                    {/* Total */}
+                                    <div className="flex justify-between items-center mb-6 pt-4 border-t border-amber-200">
+                                        <span className="font-bold text-lg text-amber-800">Total:</span>
+                                        <span className="font-bold text-xl text-amber-700">${getTotalPrice().toFixed(2)}</span>
+                                    </div>
+                                    
+                                    {/* Order Button */}
+                                    <motion.button
+                                        className={`w-full py-4 rounded-xl font-bold text-white order-btn shadow-lg ${getTotalItems() === 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                        whileHover={getTotalItems() > 0 ? { scale: 1.02 } : {}}
+                                        whileTap={getTotalItems() > 0 ? { scale: 0.98 } : {}}
+                                        onClick={placeOrder}
+                                        disabled={getTotalItems() === 0}
+                                    >
+                                        {isOrderPlaced ? (
+                                            <span className="flex items-center justify-center">
+                                                <i className="fas fa-check mr-2"></i> Order Placed!
+                                            </span>
+                                        ) : (
+                                            <span className="flex items-center justify-center">
+                                                <i className="fab fa-whatsapp mr-2 text-xl"></i> 
+                                                Place Order via WhatsApp
+                                            </span>
+                                        )}
+                                    </motion.button>
+                                    
+                                    {/* Payment Info */}
+                                    <div className="mt-4 text-center text-sm text-amber-600">
+                                        <p>Payment upon delivery (cash or mobile payment)</p>
+                                    </div>
+                                </div>
+                            </motion.div>
+                        </div>
+                        
+                        {/* Pancake Animation */}
+                        <motion.div 
+                            className="flex justify-center mt-12"
+                            animate={{ 
+                                y: [0, -20, 0],
+                                rotate: [0, 5, 0, -5, 0]
+                            }}
+                            transition={{ 
+                                duration: 4,
+                                repeat: Infinity,
+                                repeatType: "reverse"
+                            }}
+                        >
+                            <i className="fas fa-pancakes text-8xl text-amber-500"></i>
+                        </motion.div>
+                        
+                        {/* Footer */}
+                        <footer className="mt-16 text-center text-amber-700">
+                            <p className="mb-2">Morning Glory Pancakes &copy; {new Date().getFullYear()}</p>
+                            <p className="text-sm">Freshly made pancakes delivered to your hostel every morning from 7-10 AM</p>
+                        </footer>
+                    </div>
+                </div>
+            );
+        };
+
+        ReactDOM.render(<App />, document.getElementById('root'));
+    </script>
+</body>
+</html>
