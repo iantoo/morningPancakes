@@ -80,7 +80,7 @@ export default function Order() {
         `*Hostel:* ${watchedValues.hostel}%0A` +
         `*Room:* ${watchedValues.room}%0A%0A` +
         `*Your Perfect Stack:*%0A${flavorDetails}%0A%0A` +
-        `*Total:* $${calculateTotal().toFixed(2)} (${getTotalQuantity()} stacks)%0A%0A` +
+        `*Total Stacks:* ${getTotalQuantity()} stack${getTotalQuantity() !== 1 ? 's' : ''}%0A%0A` +
         `Thank you for choosing Morning Glory! ☀️ We'll have your delicious pancakes ready in 15-30 minutes! 🚀`;
 
       window.open(`https://wa.me/254794056800?text=${message}`, '_blank');
@@ -434,19 +434,7 @@ export default function Order() {
                       </div>
                     </motion.div>
                   )}
-                  <div className="border-t-3 border-sunrise-orange/30 pt-4">
-                    <div className="flex justify-between items-center text-2xl font-bold text-maple-brown">
-                      <span>💰 Total:</span>
-                      <motion.span
-                        key={calculateTotal()}
-                        initial={{ scale: 1.2, color: "#FFA94D" }}
-                        animate={{ scale: 1, color: "#7B4B2A" }}
-                        transition={{ type: "spring", stiffness: 300 }}
-                      >
-                        ${calculateTotal().toFixed(2)}
-                      </motion.span>
-                    </div>
-                  </div>
+
                 </div>
               </CardContent>
             </Card>
@@ -474,7 +462,7 @@ export default function Order() {
                   <CardContent className="p-6 text-center">
                     <div className="text-4xl mb-2">💝</div>
                     <h4 className="font-bold text-maple-brown text-lg mb-2">Student Friendly</h4>
-                    <p className="text-maple-brown">Just $8 per delicious stack</p>
+                    <p className="text-maple-brown">Perfect for busy mornings</p>
                   </CardContent>
                 </Card>
               </motion.div>
