@@ -28,19 +28,13 @@ export const flavors = pgTable("flavors", {
 });
 
 export const insertOrderSchema = createInsertSchema(orders).pick({
-  hostel: true,
   room: true,
   quantity: true,
   flavors: true,
-  customerName: true,
-  phoneNumber: true,
 }).extend({
   quantity: z.number().min(1).max(10),
   flavors: z.array(z.string()).min(1, "Please select at least one flavor"),
   room: z.string().min(1, "Room number is required"),
-  hostel: z.string().min(1, "Please select a hostel"),
-  customerName: z.string().optional(),
-  phoneNumber: z.string().optional(),
 });
 
 export type InsertOrder = z.infer<typeof insertOrderSchema>;

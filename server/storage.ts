@@ -64,12 +64,15 @@ export class MemStorage implements IStorage {
     const total = insertOrder.quantity === 2 ? 1500 : insertOrder.quantity * 800; // in cents
     
     const order: Order = {
-      ...insertOrder,
       id,
+      hostel: "default", // Default hostel since dropdown is removed
+      room: insertOrder.room,
+      quantity: insertOrder.quantity,
+      flavors: insertOrder.flavors,
+      customerName: null,
+      phoneNumber: null,
       total,
       status: "pending",
-      customerName: insertOrder.customerName || null,
-      phoneNumber: insertOrder.phoneNumber || null,
     };
     
     this.orders.set(id, order);

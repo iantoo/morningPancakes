@@ -2,17 +2,16 @@ import { useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { insertOrderSchema, type Hostel, type Flavor } from "@shared/schema";
+import { insertOrderSchema, type Flavor } from "@shared/schema";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Separator } from "@/components/ui/separator";
-import { Sun, Clock, Building, DoorOpen, LayersIcon, Minus, Plus, MessageCircle, Bike, Heart, Star, Phone, Mail, Instagram, Facebook } from "lucide-react";
+import { Sun, Clock, DoorOpen, LayersIcon, Minus, Plus, MessageCircle, Bike, Heart, Star, Instagram, Facebook } from "lucide-react";
 import { z } from "zod";
 
 type FormData = z.infer<typeof insertOrderSchema>;
@@ -24,17 +23,10 @@ export default function Home() {
   const form = useForm<FormData>({
     resolver: zodResolver(insertOrderSchema),
     defaultValues: {
-      hostel: "",
       room: "",
       quantity: 1,
       flavors: [],
-      customerName: "",
-      phoneNumber: "",
     },
-  });
-
-  const { data: hostels = [], isLoading: hostelsLoading } = useQuery<Hostel[]>({
-    queryKey: ["/api/hostels"],
   });
 
   const { data: flavors = [], isLoading: flavorsLoading } = useQuery<Flavor[]>({
@@ -84,7 +76,6 @@ export default function Home() {
   };
 
   const generateWhatsAppOrder = (order: any) => {
-    const selectedHostel = hostels.find(h => h.value === order.hostel);
     const selectedFlavorNames = flavors
       .filter(f => order.flavors.includes(f.value))
       .map(f => `${f.emoji} ${f.name}`)
@@ -92,10 +83,7 @@ export default function Home() {
 
     const message = `🌅 *Morning Glory Pancakes Order* 🥞
 
-📍 *Hostel:* ${selectedHostel?.name || order.hostel}
 🚪 *Room:* ${order.room}
-👤 *Customer:* ${order.customerName || "Not provided"}
-📞 *Phone:* ${order.phoneNumber || "Not provided"}
 📊 *Quantity:* ${order.quantity} stack${order.quantity > 1 ? 's' : ''}
 🎯 *Flavors:* ${selectedFlavorNames}
 💰 *Total:* $${(order.total / 100).toFixed(2)}
@@ -111,7 +99,6 @@ Please confirm this order and let me know the delivery time. Thank you! 😊`;
     createOrderMutation.mutate(data);
   };
 
-  const selectedHostel = hostels.find(h => h.value === watchedValues.hostel);
   const selectedFlavorNames = flavors
     .filter(f => selectedFlavors.includes(f.value))
     .map(f => `${f.emoji} ${f.name}`)
@@ -180,80 +167,6 @@ Please confirm this order and let me know the delivery time. Thank you! 😊`;
               <CardContent className="p-8">
                 <Form {...form}>
                   <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                    {/* Customer Name */}
-                    <FormField
-                      control={form.control}
-                      name="customerName"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-sm font-semibold text-maple-brown flex items-center">
-                            <span className="mr-2">👤</span>Your Name (Optional)
-                          </FormLabel>
-                          <FormControl>
-                            <Input 
-                              placeholder="Enter your name" 
-                              className="border-2 border-pancake-gold border-opacity-30 rounded-xl focus:border-pancake-gold"
-                              {...field} 
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    {/* Phone Number */}
-                    <FormField
-                      control={form.control}
-                      name="phoneNumber"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-sm font-semibold text-maple-brown flex items-center">
-                            <Phone className="h-4 w-4 mr-2" />Phone Number (Optional)
-                          </FormLabel>
-                          <FormControl>
-                            <Input 
-                              placeholder="Enter your phone number" 
-                              className="border-2 border-pancake-gold border-opacity-30 rounded-xl focus:border-pancake-gold"
-                              {...field} 
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    {/* Hostel Selection */}
-                    <FormField
-                      control={form.control}
-                      name="hostel"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-sm font-semibold text-maple-brown flex items-center">
-                            <Building className="h-4 w-4 mr-2" />Select Your Hostel
-                          </FormLabel>
-                          <Select onValueChange={field.onChange} defaultValue={field.value}>
-                            <FormControl>
-                              <SelectTrigger className="border-2 border-pancake-gold border-opacity-30 rounded-xl focus:border-pancake-gold">
-                                <SelectValue placeholder="Choose your hostel..." />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              {hostelsLoading ? (
-                                <SelectItem value="loading" disabled>Loading hostels...</SelectItem>
-                              ) : (
-                                hostels.map(hostel => (
-                                  <SelectItem key={hostel.id} value={hostel.value}>
-                                    {hostel.name}
-                                  </SelectItem>
-                                ))
-                              )}
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
                     {/* Room Number */}
                     <FormField
                       control={form.control}
@@ -372,10 +285,7 @@ Please confirm this order and let me know the delivery time. Thank you! 😊`;
                     <span className="mr-2">🧾</span>Order Summary
                   </h3>
                   <div className="space-y-3">
-                    <div className="flex justify-between items-center text-gray-600">
-                      <span>Hostel:</span>
-                      <span className="font-medium">{selectedHostel?.name || 'Not selected'}</span>
-                    </div>
+
                     <div className="flex justify-between items-center text-gray-600">
                       <span>Room:</span>
                       <span className="font-medium">{watchedValues.room || 'Not entered'}</span>
@@ -489,8 +399,7 @@ Please confirm this order and let me know the delivery time. Thank you! 😊`;
             <div>
               <h4 className="font-bold mb-4">Contact Info</h4>
               <div className="space-y-2 text-yellow-200">
-                <p className="flex items-center"><Phone className="h-4 w-4 mr-2" />+1 (555) 123-CAKE</p>
-                <p className="flex items-center"><Mail className="h-4 w-4 mr-2" />hello@morningglory.com</p>
+                <p className="flex items-center"><MessageCircle className="h-4 w-4 mr-2" />WhatsApp Orders</p>
                 <p className="flex items-center"><Clock className="h-4 w-4 mr-2" />6:00 AM - 12:00 PM Daily</p>
               </div>
             </div>
