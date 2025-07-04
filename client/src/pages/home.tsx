@@ -11,7 +11,8 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Separator } from "@/components/ui/separator";
-import { Sun, Clock, Building, DoorOpen, LayersIcon, Minus, Plus, MessageCircle, Bike, Heart, Star, Instagram, Facebook } from "lucide-react";
+import { Sun, Clock, Building, DoorOpen, LayersIcon, Minus, Plus, MessageCircle, Bike, Heart, Star, Instagram, Facebook, Info } from "lucide-react";
+import { Link } from "wouter";
 import { z } from "zod";
 
 type FormData = z.infer<typeof insertOrderSchema>;
@@ -118,26 +119,37 @@ Please confirm this order and let me know the delivery time. Thank you! 😊`;
   };
 
   return (
-    <div className="min-h-screen bg-warm-gray">
+    <div className="min-h-screen bg-morning-gradient">
       {/* Header */}
-      <header className="bg-white shadow-sm sticky top-0 z-50">
+      <header className="bg-cream-white shadow-sm sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-4">
             <div className="flex items-center space-x-2">
-              <Sun className="text-pancake-gold text-2xl" />
+              <Sun className="text-sunrise-orange text-2xl" />
               <h1 className="text-2xl font-fredoka text-maple-brown">Morning Glory</h1>
             </div>
-            <div className="hidden md:flex items-center space-x-2 text-sm text-gray-600">
-              <Clock className="h-4 w-4" />
-              <span>Open 6:00 AM - 12:00 PM</span>
+            <div className="flex items-center space-x-6">
+              <Link href="/about">
+                <Button 
+                  variant="ghost" 
+                  className="text-maple-brown hover:bg-lemon-yellow font-medium"
+                >
+                  <Info className="h-4 w-4 mr-2" />
+                  About Us
+                </Button>
+              </Link>
+              <div className="hidden md:flex items-center space-x-2 text-sm text-maple-brown">
+                <Clock className="h-4 w-4" />
+                <span>Open 6:00 AM - 12:00 PM</span>
+              </div>
             </div>
           </div>
         </div>
       </header>
 
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-pancake-gold via-yellow-400 to-orange-400 py-20 overflow-hidden">
-        <div className="absolute inset-0 bg-black opacity-20"></div>
+      <section className="relative bg-sunset-gradient py-20 overflow-hidden">
+        <div className="absolute inset-0 bg-black opacity-10"></div>
         
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <div className="animate-bounce mb-8">
@@ -146,7 +158,7 @@ Please confirm this order and let me know the delivery time. Thank you! 😊`;
           <h1 className="text-5xl md:text-7xl font-fredoka text-white mb-6 drop-shadow-lg">
             Morning Glory Pancakes
           </h1>
-          <p className="text-xl md:text-2xl text-cream mb-8 max-w-2xl mx-auto">
+          <p className="text-xl md:text-2xl text-white/90 mb-8 max-w-2xl mx-auto">
             Fluffy, golden pancakes delivered fresh to your hostel room every morning! 🥞
           </p>
           <div className="flex justify-center space-x-4 flex-wrap gap-4">
@@ -167,16 +179,16 @@ Please confirm this order and let me know the delivery time. Thank you! 😊`;
       </section>
 
       {/* Order Form Section */}
-      <section className="py-16 bg-white">
+      <section className="py-16 bg-cream-white">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-4xl font-fredoka text-maple-brown mb-4">Order Your Perfect Stack</h2>
-            <p className="text-lg text-gray-600">Fill out the form below and we'll send your order via WhatsApp!</p>
+            <p className="text-lg text-maple-brown/80">Fill out the form below and we'll send your order via WhatsApp!</p>
           </div>
 
           <div className="grid lg:grid-cols-2 gap-8">
             {/* Order Form */}
-            <Card className="bg-cream rounded-3xl shadow-lg border-none">
+            <Card className="bg-white rounded-3xl shadow-lg border-2 border-strawberry-pink/20">
               <CardContent className="p-8">
                 <Form {...form}>
                   <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -234,7 +246,7 @@ Please confirm this order and let me know the delivery time. Thank you! 😊`;
                           flavors.map(flavor => (
                             <div 
                               key={flavor.id}
-                              className="flex items-center justify-between p-4 border-2 border-pancake-gold border-opacity-30 rounded-xl hover:bg-pancake-gold hover:bg-opacity-10 transition-all duration-200"
+                              className="flex items-center justify-between p-4 border-2 border-sunrise-orange border-opacity-30 rounded-xl hover:bg-lemon-yellow hover:bg-opacity-20 transition-all duration-200"
                             >
                               <div className="flex items-center space-x-3">
                                 <span className="text-2xl">{flavor.emoji}</span>
@@ -244,7 +256,7 @@ Please confirm this order and let me know the delivery time. Thank you! 😊`;
                                 <Button
                                   type="button"
                                   onClick={() => updateFlavorQuantity(flavor.value, Math.max(0, (flavorQuantities[flavor.value] || 0) - 1))}
-                                  className="w-8 h-8 bg-pancake-gold text-white rounded-full hover:bg-yellow-600"
+                                  className="w-8 h-8 bg-sunrise-orange text-white rounded-full hover:bg-strawberry-pink"
                                   disabled={!flavorQuantities[flavor.value]}
                                 >
                                   <Minus className="h-3 w-3" />
@@ -255,7 +267,7 @@ Please confirm this order and let me know the delivery time. Thank you! 😊`;
                                 <Button
                                   type="button"
                                   onClick={() => updateFlavorQuantity(flavor.value, Math.min(10, (flavorQuantities[flavor.value] || 0) + 1))}
-                                  className="w-8 h-8 bg-pancake-gold text-white rounded-full hover:bg-yellow-600"
+                                  className="w-8 h-8 bg-sunrise-orange text-white rounded-full hover:bg-strawberry-pink"
                                   disabled={(flavorQuantities[flavor.value] || 0) >= 10}
                                 >
                                   <Plus className="h-3 w-3" />
@@ -273,7 +285,7 @@ Please confirm this order and let me know the delivery time. Thank you! 😊`;
                     {/* Order Button */}
                     <Button 
                       type="submit" 
-                      className="w-full bg-gradient-to-r from-pancake-gold to-yellow-500 text-white font-bold py-4 px-6 rounded-xl hover:from-yellow-600 hover:to-orange-500 transform hover:scale-105 transition-all duration-200 shadow-lg"
+                      className="w-full bg-sunset-gradient text-white font-bold py-4 px-6 rounded-xl hover:opacity-90 transform hover:scale-105 transition-all duration-200 shadow-lg"
                       disabled={createOrderMutation.isPending}
                     >
                       <MessageCircle className="mr-3 h-5 w-5" />
@@ -287,31 +299,31 @@ Please confirm this order and let me know the delivery time. Thank you! 😊`;
             {/* Order Summary & Info */}
             <div className="space-y-6">
               {/* Order Summary */}
-              <Card className="bg-white rounded-3xl shadow-lg border-2 border-pancake-gold border-opacity-20">
+              <Card className="bg-white rounded-3xl shadow-lg border-2 border-strawberry-pink border-opacity-30">
                 <CardContent className="p-8">
                   <h3 className="text-2xl font-fredoka text-maple-brown mb-4 flex items-center">
                     <span className="mr-2">🧾</span>Order Summary
                   </h3>
                   <div className="space-y-3">
-                    <div className="flex justify-between items-center text-gray-600">
+                    <div className="flex justify-between items-center text-maple-brown/80">
                       <span>Hostel:</span>
                       <span className="font-medium">{watchedValues.hostel || 'Not entered'}</span>
                     </div>
-                    <div className="flex justify-between items-center text-gray-600">
+                    <div className="flex justify-between items-center text-maple-brown/80">
                       <span>Room:</span>
                       <span className="font-medium">{watchedValues.room || 'Not entered'}</span>
                     </div>
-                    <div className="flex justify-between items-center text-gray-600">
+                    <div className="flex justify-between items-center text-maple-brown/80">
                       <span>Total Stacks:</span>
                       <span className="font-medium">{getTotalQuantity()} stack{getTotalQuantity() !== 1 ? 's' : ''}</span>
                     </div>
-                    <div className="text-gray-600">
+                    <div className="text-maple-brown/80">
                       <span>Flavors:</span>
                       <div className="font-medium text-sm mt-1">
                         {getSelectedFlavorNames() || 'None selected'}
                       </div>
                     </div>
-                    <Separator className="border-pancake-gold border-opacity-30" />
+                    <Separator className="border-sunrise-orange border-opacity-30" />
                     <div className="flex justify-between items-center font-bold text-lg text-maple-brown">
                       <span>Total:</span>
                       <span>${calculateTotal().toFixed(2)}</span>
@@ -322,23 +334,23 @@ Please confirm this order and let me know the delivery time. Thank you! 😊`;
 
               {/* Info Cards */}
               <div className="grid gap-4">
-                <Card className="bg-green-50 border-2 border-green-200">
+                <Card className="bg-mint-green border-2 border-mint-green">
                   <CardContent className="p-6">
                     <div className="flex items-center mb-2">
-                      <Clock className="h-5 w-5 text-green-600 mr-2" />
-                      <h4 className="font-bold text-green-800">Delivery Time</h4>
+                      <Clock className="h-5 w-5 text-maple-brown mr-2" />
+                      <h4 className="font-bold text-maple-brown">Delivery Time</h4>
                     </div>
-                    <p className="text-green-700 text-sm">15-30 minutes after order confirmation</p>
+                    <p className="text-maple-brown text-sm">15-30 minutes after order confirmation</p>
                   </CardContent>
                 </Card>
                 
-                <Card className="bg-blue-50 border-2 border-blue-200">
+                <Card className="bg-lemon-yellow border-2 border-lemon-yellow">
                   <CardContent className="p-6">
                     <div className="flex items-center mb-2">
-                      <span className="text-blue-600 mr-2">💰</span>
-                      <h4 className="font-bold text-blue-800">Pricing</h4>
+                      <span className="text-maple-brown mr-2">💰</span>
+                      <h4 className="font-bold text-maple-brown">Pricing</h4>
                     </div>
-                    <p className="text-blue-700 text-sm">$8 per stack</p>
+                    <p className="text-maple-brown text-sm">$8 per stack</p>
                   </CardContent>
                 </Card>
               </div>
@@ -348,11 +360,11 @@ Please confirm this order and let me know the delivery time. Thank you! 😊`;
       </section>
 
       {/* Features Section */}
-      <section className="py-16 bg-gradient-to-r from-cream to-yellow-100">
+      <section className="py-16 bg-lemon-yellow">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-4xl font-fredoka text-maple-brown mb-4">Why Choose Morning Glory?</h2>
-            <p className="text-lg text-gray-600">We make every morning special with our delicious pancakes!</p>
+            <p className="text-lg text-maple-brown/80">We make every morning special with our delicious pancakes!</p>
           </div>
 
           <div className="grid md:grid-cols-3 gap-8">

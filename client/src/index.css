@@ -26,11 +26,17 @@
   --ring: hsl(20, 14.3%, 4.1%);
   --radius: 0.5rem;
   
-  /* Custom Morning Glory colors */
-  --pancake-gold: hsl(45, 93%, 47%);
-  --maple-brown: hsl(30, 75%, 28%);
-  --cream: hsl(48, 82%, 88%);
-  --warm-gray: hsl(0, 0%, 98%);
+  /* Morning Glory color palette */
+  --sunrise-orange: hsl(30, 100%, 64%);     /* #FFA94D */
+  --lemon-yellow: hsl(48, 100%, 85%);       /* #FFF3B0 */
+  --cream-white: hsl(35, 100%, 97%);        /* #FFF8F0 */
+  --strawberry-pink: hsl(339, 100%, 84%);   /* #FFACC7 */
+  --maple-brown: hsl(25, 52%, 32%);         /* #7B4B2A */
+  --mint-green: hsl(162, 59%, 75%);         /* #A3E4D7 */
+  
+  /* Legacy colors for compatibility */
+  --pancake-gold: hsl(30, 100%, 64%);
+  --warm-gray: hsl(35, 100%, 97%);
 }
 
 .dark {
@@ -72,12 +78,37 @@
     font-family: 'Fredoka One', cursive;
   }
   
-  .text-pancake-gold {
-    color: var(--pancake-gold);
+  /* Morning Glory utility classes */
+  .text-sunrise-orange {
+    color: var(--sunrise-orange);
   }
   
-  .bg-pancake-gold {
-    background-color: var(--pancake-gold);
+  .bg-sunrise-orange {
+    background-color: var(--sunrise-orange);
+  }
+  
+  .text-lemon-yellow {
+    color: var(--lemon-yellow);
+  }
+  
+  .bg-lemon-yellow {
+    background-color: var(--lemon-yellow);
+  }
+  
+  .text-cream-white {
+    color: var(--cream-white);
+  }
+  
+  .bg-cream-white {
+    background-color: var(--cream-white);
+  }
+  
+  .text-strawberry-pink {
+    color: var(--strawberry-pink);
+  }
+  
+  .bg-strawberry-pink {
+    background-color: var(--strawberry-pink);
   }
   
   .text-maple-brown {
@@ -88,12 +119,21 @@
     background-color: var(--maple-brown);
   }
   
-  .text-cream {
-    color: var(--cream);
+  .text-mint-green {
+    color: var(--mint-green);
   }
   
-  .bg-cream {
-    background-color: var(--cream);
+  .bg-mint-green {
+    background-color: var(--mint-green);
+  }
+  
+  /* Legacy classes for compatibility */
+  .text-pancake-gold {
+    color: var(--pancake-gold);
+  }
+  
+  .bg-pancake-gold {
+    background-color: var(--pancake-gold);
   }
   
   .bg-warm-gray {
@@ -102,5 +142,22 @@
   
   .border-pancake-gold {
     border-color: var(--pancake-gold);
+  }
+  
+  .border-sunrise-orange {
+    border-color: var(--sunrise-orange);
+  }
+  
+  .border-strawberry-pink {
+    border-color: var(--strawberry-pink);
+  }
+  
+  /* Gradient backgrounds */
+  .bg-morning-gradient {
+    background: linear-gradient(135deg, var(--cream-white) 0%, var(--lemon-yellow) 100%);
+  }
+  
+  .bg-sunset-gradient {
+    background: linear-gradient(135deg, var(--sunrise-orange) 0%, var(--strawberry-pink) 100%);
   }
 }

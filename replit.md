@@ -93,7 +93,20 @@ This is a full-stack web application for ordering fresh pancakes for delivery to
 
 ## Changelog
 - July 04, 2025. Initial setup
+- July 04, 2025. Implemented two-page website with Morning Glory color palette
+  - Added About page (/about) with comprehensive business information
+  - Updated color scheme to Morning Glory palette: Sunrise Orange, Lemon Yellow, Cream White, Strawberry Pink, Maple Brown, Mint Green
+  - Added navigation between home and about pages
+  - Redesigned UI with new color scheme throughout the application
+
+## Recent Changes
+- **Two-page website**: Added About page with navigation
+- **Morning Glory color palette**: Complete visual redesign using specified colors
+- **Enhanced user experience**: Better navigation and visual consistency
+- **Individual flavor quantities**: Customers can select different amounts per flavor
+- **WhatsApp integration**: Orders sent to +254794056800
 
 ## User Preferences
 
 Preferred communication style: Simple, everyday language.
+Design preference: Morning Glory color palette with warm, cheerful tones.
