@@ -60,14 +60,15 @@ export class MemStorage implements IStorage {
   async createOrder(insertOrder: InsertOrder): Promise<Order> {
     const id = this.currentOrderId++;
     
-    // Calculate total price (8 per stack, 15 for 2 stacks)
-    const total = insertOrder.quantity === 2 ? 1500 : insertOrder.quantity * 800; // in cents
+    // Calculate total price based on flavor quantities ($8 per stack)
+    const totalQuantity = insertOrder.flavors.reduce((sum, item) => sum + item.quantity, 0);
+    const total = totalQuantity * 800; // in cents
     
     const order: Order = {
       id,
       hostel: insertOrder.hostel,
       room: insertOrder.room,
-      quantity: insertOrder.quantity,
+      quantity: totalQuantity,
       flavors: insertOrder.flavors,
       customerName: null,
       phoneNumber: null,

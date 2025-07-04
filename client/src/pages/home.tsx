@@ -18,14 +18,13 @@ type FormData = z.infer<typeof insertOrderSchema>;
 
 export default function Home() {
   const { toast } = useToast();
-  const [quantity, setQuantity] = useState(1);
+  const [flavorQuantities, setFlavorQuantities] = useState<Record<string, number>>({});
 
   const form = useForm<FormData>({
     resolver: zodResolver(insertOrderSchema),
     defaultValues: {
       hostel: "",
       room: "",
-      quantity: 1,
       flavors: [],
     },
   });
@@ -57,43 +56,51 @@ export default function Home() {
   });
 
   const watchedValues = form.watch();
-  const selectedFlavors = watchedValues.flavors || [];
-  const currentQuantity = watchedValues.quantity || quantity;
-
-  const calculateTotal = (qty: number) => {
-    return qty === 2 ? 15 : qty * 8;
+  
+  const getTotalQuantity = () => {
+    return Object.values(flavorQuantities).reduce((sum, qty) => sum + qty, 0);
   };
 
-  const incrementQuantity = () => {
-    const newQuantity = Math.min(currentQuantity + 1, 10);
-    setQuantity(newQuantity);
-    form.setValue("quantity", newQuantity);
+  const calculateTotal = () => {
+    return getTotalQuantity() * 8;
   };
 
-  const decrementQuantity = () => {
-    const newQuantity = Math.max(currentQuantity - 1, 1);
-    setQuantity(newQuantity);
-    form.setValue("quantity", newQuantity);
+  const updateFlavorQuantity = (flavorValue: string, quantity: number) => {
+    const newQuantities = { ...flavorQuantities };
+    if (quantity === 0) {
+      delete newQuantities[flavorValue];
+    } else {
+      newQuantities[flavorValue] = quantity;
+    }
+    setFlavorQuantities(newQuantities);
+    
+    // Update form flavors array
+    const flavorArray = Object.entries(newQuantities).map(([flavor, quantity]) => ({
+      flavor,
+      quantity
+    }));
+    form.setValue("flavors", flavorArray);
   };
 
   const generateWhatsAppOrder = (order: any) => {
-    const selectedFlavorNames = flavors
-      .filter(f => order.flavors.includes(f.value))
-      .map(f => `${f.emoji} ${f.name}`)
-      .join(", ");
+    const flavorDetails = order.flavors.map((item: any) => {
+      const flavor = flavors.find(f => f.value === item.flavor);
+      return `${flavor?.emoji || '🥞'} ${flavor?.name || item.flavor} x${item.quantity}`;
+    }).join("\n");
 
     const message = `🌅 *Morning Glory Pancakes Order* 🥞
 
 🏨 *Hostel:* ${order.hostel}
 🚪 *Room:* ${order.room}
-📊 *Quantity:* ${order.quantity} stack${order.quantity > 1 ? 's' : ''}
-🎯 *Flavors:* ${selectedFlavorNames}
+📊 *Total Stacks:* ${order.quantity}
+🎯 *Flavors:*
+${flavorDetails}
 💰 *Total:* $${(order.total / 100).toFixed(2)}
 
 Please confirm this order and let me know the delivery time. Thank you! 😊`;
 
     const encodedMessage = encodeURIComponent(message);
-    const whatsappUrl = `https://wa.me/1234567890?text=${encodedMessage}`;
+    const whatsappUrl = `https://wa.me/254794056800?text=${encodedMessage}`;
     window.open(whatsappUrl, '_blank');
   };
 
@@ -101,10 +108,14 @@ Please confirm this order and let me know the delivery time. Thank you! 😊`;
     createOrderMutation.mutate(data);
   };
 
-  const selectedFlavorNames = flavors
-    .filter(f => selectedFlavors.includes(f.value))
-    .map(f => `${f.emoji} ${f.name}`)
-    .join(", ");
+  const getSelectedFlavorNames = () => {
+    return Object.entries(flavorQuantities)
+      .map(([flavorValue, quantity]) => {
+        const flavor = flavors.find(f => f.value === flavorValue);
+        return `${flavor?.emoji || '🥞'} ${flavor?.name || flavorValue} x${quantity}`;
+      })
+      .join(", ");
+  };
 
   return (
     <div className="min-h-screen bg-warm-gray">
@@ -211,79 +222,53 @@ Please confirm this order and let me know the delivery time. Thank you! 😊`;
                       )}
                     />
 
-                    {/* Quantity */}
+                    {/* Flavor Selection with Quantity */}
                     <div>
                       <FormLabel className="text-sm font-semibold text-maple-brown flex items-center mb-3">
-                        <LayersIcon className="h-4 w-4 mr-2" />Number of Pancake Stacks
+                        <span className="mr-2">🍪</span>Choose Your Flavors & Quantities
                       </FormLabel>
-                      <div className="flex items-center space-x-4">
-                        <Button
-                          type="button"
-                          onClick={decrementQuantity}
-                          className="w-12 h-12 bg-pancake-gold text-white rounded-full hover:bg-yellow-600"
-                          disabled={currentQuantity <= 1}
-                        >
-                          <Minus className="h-4 w-4" />
-                        </Button>
-                        <span className="text-2xl font-bold text-maple-brown min-w-12 text-center">
-                          {currentQuantity}
-                        </span>
-                        <Button
-                          type="button"
-                          onClick={incrementQuantity}
-                          className="w-12 h-12 bg-pancake-gold text-white rounded-full hover:bg-yellow-600"
-                          disabled={currentQuantity >= 10}
-                        >
-                          <Plus className="h-4 w-4" />
-                        </Button>
+                      <div className="space-y-4">
+                        {flavorsLoading ? (
+                          <div className="text-center text-gray-500">Loading flavors...</div>
+                        ) : (
+                          flavors.map(flavor => (
+                            <div 
+                              key={flavor.id}
+                              className="flex items-center justify-between p-4 border-2 border-pancake-gold border-opacity-30 rounded-xl hover:bg-pancake-gold hover:bg-opacity-10 transition-all duration-200"
+                            >
+                              <div className="flex items-center space-x-3">
+                                <span className="text-2xl">{flavor.emoji}</span>
+                                <span className="font-medium text-maple-brown">{flavor.name}</span>
+                              </div>
+                              <div className="flex items-center space-x-3">
+                                <Button
+                                  type="button"
+                                  onClick={() => updateFlavorQuantity(flavor.value, Math.max(0, (flavorQuantities[flavor.value] || 0) - 1))}
+                                  className="w-8 h-8 bg-pancake-gold text-white rounded-full hover:bg-yellow-600"
+                                  disabled={!flavorQuantities[flavor.value]}
+                                >
+                                  <Minus className="h-3 w-3" />
+                                </Button>
+                                <span className="text-lg font-bold text-maple-brown min-w-8 text-center">
+                                  {flavorQuantities[flavor.value] || 0}
+                                </span>
+                                <Button
+                                  type="button"
+                                  onClick={() => updateFlavorQuantity(flavor.value, Math.min(10, (flavorQuantities[flavor.value] || 0) + 1))}
+                                  className="w-8 h-8 bg-pancake-gold text-white rounded-full hover:bg-yellow-600"
+                                  disabled={(flavorQuantities[flavor.value] || 0) >= 10}
+                                >
+                                  <Plus className="h-3 w-3" />
+                                </Button>
+                              </div>
+                            </div>
+                          ))
+                        )}
                       </div>
-                    </div>
-
-                    {/* Flavor Selection */}
-                    <FormField
-                      control={form.control}
-                      name="flavors"
-                      render={() => (
-                        <FormItem>
-                          <FormLabel className="text-sm font-semibold text-maple-brown flex items-center mb-3">
-                            <span className="mr-2">🍪</span>Choose Your Flavors
-                          </FormLabel>
-                          <div className="grid grid-cols-2 gap-3">
-                            {flavorsLoading ? (
-                              <div className="col-span-2 text-center text-gray-500">Loading flavors...</div>
-                            ) : (
-                              flavors.map(flavor => (
-                                <FormField
-                                  key={flavor.id}
-                                  control={form.control}
-                                  name="flavors"
-                                  render={({ field }) => (
-                                    <FormItem className="flex items-center space-x-3 p-3 border-2 border-pancake-gold border-opacity-30 rounded-xl hover:bg-pancake-gold hover:bg-opacity-10 transition-all duration-200">
-                                      <FormControl>
-                                        <Checkbox
-                                          checked={field.value?.includes(flavor.value)}
-                                          onCheckedChange={(checked) => {
-                                            return checked
-                                              ? field.onChange([...field.value, flavor.value])
-                                              : field.onChange(
-                                                  field.value?.filter((value) => value !== flavor.value)
-                                                )
-                                          }}
-                                        />
-                                      </FormControl>
-                                      <FormLabel className="text-sm font-medium cursor-pointer">
-                                        {flavor.emoji} {flavor.name}
-                                      </FormLabel>
-                                    </FormItem>
-                                  )}
-                                />
-                              ))
-                            )}
-                          </div>
-                          <FormMessage />
-                        </FormItem>
+                      {Object.keys(flavorQuantities).length === 0 && (
+                        <p className="text-red-500 text-sm mt-2">Please select at least one flavor</p>
                       )}
-                    />
+                    </div>
 
                     {/* Order Button */}
                     <Button 
@@ -317,19 +302,19 @@ Please confirm this order and let me know the delivery time. Thank you! 😊`;
                       <span className="font-medium">{watchedValues.room || 'Not entered'}</span>
                     </div>
                     <div className="flex justify-between items-center text-gray-600">
-                      <span>Quantity:</span>
-                      <span className="font-medium">{currentQuantity} stack{currentQuantity > 1 ? 's' : ''}</span>
+                      <span>Total Stacks:</span>
+                      <span className="font-medium">{getTotalQuantity()} stack{getTotalQuantity() !== 1 ? 's' : ''}</span>
                     </div>
                     <div className="text-gray-600">
                       <span>Flavors:</span>
                       <div className="font-medium text-sm mt-1">
-                        {selectedFlavorNames || 'None selected'}
+                        {getSelectedFlavorNames() || 'None selected'}
                       </div>
                     </div>
                     <Separator className="border-pancake-gold border-opacity-30" />
                     <div className="flex justify-between items-center font-bold text-lg text-maple-brown">
                       <span>Total:</span>
-                      <span>${calculateTotal(currentQuantity).toFixed(2)}</span>
+                      <span>${calculateTotal().toFixed(2)}</span>
                     </div>
                   </div>
                 </CardContent>
@@ -353,7 +338,7 @@ Please confirm this order and let me know the delivery time. Thank you! 😊`;
                       <span className="text-blue-600 mr-2">💰</span>
                       <h4 className="font-bold text-blue-800">Pricing</h4>
                     </div>
-                    <p className="text-blue-700 text-sm">$8 per stack, $15 for 2 stacks</p>
+                    <p className="text-blue-700 text-sm">$8 per stack</p>
                   </CardContent>
                 </Card>
               </div>

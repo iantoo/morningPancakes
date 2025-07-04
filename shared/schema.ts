@@ -7,7 +7,7 @@ export const orders = pgTable("orders", {
   hostel: text("hostel").notNull(),
   room: text("room").notNull(),
   quantity: integer("quantity").notNull(),
-  flavors: json("flavors").$type<string[]>().notNull(),
+  flavors: json("flavors").$type<{ flavor: string; quantity: number }[]>().notNull(),
   customerName: text("customer_name"),
   phoneNumber: text("phone_number"),
   total: integer("total").notNull(), // in cents
@@ -30,11 +30,12 @@ export const flavors = pgTable("flavors", {
 export const insertOrderSchema = createInsertSchema(orders).pick({
   hostel: true,
   room: true,
-  quantity: true,
   flavors: true,
 }).extend({
-  quantity: z.number().min(1).max(10),
-  flavors: z.array(z.string()).min(1, "Please select at least one flavor"),
+  flavors: z.array(z.object({
+    flavor: z.string(),
+    quantity: z.number().min(1).max(10)
+  })).min(1, "Please select at least one flavor"),
   room: z.string().min(1, "Room number is required"),
   hostel: z.string().min(1, "Hostel name is required"),
 });
