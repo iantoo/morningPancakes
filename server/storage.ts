@@ -65,7 +65,7 @@ export class MemStorage implements IStorage {
     
     const order: Order = {
       id,
-      hostel: "default", // Default hostel since dropdown is removed
+      hostel: insertOrder.hostel,
       room: insertOrder.room,
       quantity: insertOrder.quantity,
       flavors: insertOrder.flavors,

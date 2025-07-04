@@ -11,7 +11,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Separator } from "@/components/ui/separator";
-import { Sun, Clock, DoorOpen, LayersIcon, Minus, Plus, MessageCircle, Bike, Heart, Star, Instagram, Facebook } from "lucide-react";
+import { Sun, Clock, Building, DoorOpen, LayersIcon, Minus, Plus, MessageCircle, Bike, Heart, Star, Instagram, Facebook } from "lucide-react";
 import { z } from "zod";
 
 type FormData = z.infer<typeof insertOrderSchema>;
@@ -23,6 +23,7 @@ export default function Home() {
   const form = useForm<FormData>({
     resolver: zodResolver(insertOrderSchema),
     defaultValues: {
+      hostel: "",
       room: "",
       quantity: 1,
       flavors: [],
@@ -83,6 +84,7 @@ export default function Home() {
 
     const message = `🌅 *Morning Glory Pancakes Order* 🥞
 
+🏨 *Hostel:* ${order.hostel}
 🚪 *Room:* ${order.room}
 📊 *Quantity:* ${order.quantity} stack${order.quantity > 1 ? 's' : ''}
 🎯 *Flavors:* ${selectedFlavorNames}
@@ -167,6 +169,27 @@ Please confirm this order and let me know the delivery time. Thank you! 😊`;
               <CardContent className="p-8">
                 <Form {...form}>
                   <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                    {/* Hostel Name */}
+                    <FormField
+                      control={form.control}
+                      name="hostel"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-sm font-semibold text-maple-brown flex items-center">
+                            <Building className="h-4 w-4 mr-2" />Hostel Name
+                          </FormLabel>
+                          <FormControl>
+                            <Input 
+                              placeholder="e.g., Sunrise Hostel, Golden Inn" 
+                              className="border-2 border-pancake-gold border-opacity-30 rounded-xl focus:border-pancake-gold"
+                              {...field} 
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
                     {/* Room Number */}
                     <FormField
                       control={form.control}
@@ -285,7 +308,10 @@ Please confirm this order and let me know the delivery time. Thank you! 😊`;
                     <span className="mr-2">🧾</span>Order Summary
                   </h3>
                   <div className="space-y-3">
-
+                    <div className="flex justify-between items-center text-gray-600">
+                      <span>Hostel:</span>
+                      <span className="font-medium">{watchedValues.hostel || 'Not entered'}</span>
+                    </div>
                     <div className="flex justify-between items-center text-gray-600">
                       <span>Room:</span>
                       <span className="font-medium">{watchedValues.room || 'Not entered'}</span>
